@@ -71,33 +71,36 @@ def get_cluster(counter, counts_by_image_type):
         return i
 
 # Example usage
-directory_path = "./data/raw-images"
-file_list = list_files(directory_path)
-counts_by_image_type = {
-    1: 8,
-    2: 30,
-    3: 23,
-    4: 28,
-    5: 30,
-    6: 25,
-    7: 34,
-    8: 30,
-    9: 33
-}
+def main():
+    directory_path = "./data/raw-images"
+    file_list = list_files(directory_path)
+    counts_by_image_type = {
+        1: 8,
+        2: 30,
+        3: 23,
+        4: 28,
+        5: 30,
+        6: 25,
+        7: 34,
+        8: 30,
+        9: 33
+    }
 
-# tuples in order of orange object, red object
-# within tuple, it is height and then width (both in cm)
-dimensions_by_image_type = {
-    1: ((2, 5), (5, 5)),
-    2: ((1, 2), (2.5, 5)),
-    3: ((2, 2), (5, 10)),
-    4: ((2, 5), (2.5, 10)),
-    5: ((2, 2.5), (1, 5)),
-    6: ((2, 2.5), (5, 5)),
-    7: ((0.5, 2.5), (2.5, 5)),
-    8: ((2, 5), (10, 10)),
-    9: ((0.5, 2.5), (1, 5))
-}
+    # tuples in order of orange object, red object
+    # within tuple, it is height and then width (both in cm)
+    dimensions_by_image_type = {
+        1: ((2, 5), (5, 5)),
+        2: ((1, 2), (2.5, 5)),
+        3: ((2, 2), (5, 10)),
+        4: ((2, 5), (2.5, 10)),
+        5: ((2, 2.5), (1, 5)),
+        6: ((2, 2.5), (5, 5)),
+        7: ((0.5, 2.5), (2.5, 5)),
+        8: ((2, 5), (10, 10)),
+        9: ((0.5, 2.5), (1, 5))
+    }
 
-rename_files(file_list, counts_by_image_type, dimensions_by_image_type)
+    rename_files(file_list, counts_by_image_type, dimensions_by_image_type)
 
+if __name__ == "__main__":
+    main()
