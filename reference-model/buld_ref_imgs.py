@@ -13,26 +13,39 @@ def list_files(directory):
     return files
 
 
-def detect_orange_pixels(image_path):
+def replace_orange_with_background(image_path):
     # Read the image
     image = cv2.imread(image_path)
 
     # Convert the image from BGR to HSV color space
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-    # Define the lower and upper bounds for the orange color in HSV
-    lower_orange = np.array([0, 100, 100])
-    upper_orange = np.array([30, 255, 255])
+    # Define the lower and upper bounds for the red color in HSV
+    lower_red = np.array([0, 100, 100])
+    upper_red = np.array([30, 255, 255])
 
-    # Create a binary mask for the orange pixels
-    orange_mask = cv2.inRange(hsv_image, lower_orange, upper_orange)
+    # Create a binary mask for the red pixels
+    red_mask = cv2.inRange(hsv_image, lower_red, upper_red)
 
-    # Apply the mask to the original image
-    result_image = cv2.bitwise_and(image, image, mask=orange_mask)
+    # Find contours in the red mask
+    contours, _ = cv2.findContours(red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    return result_image
+    # Iterate through each contour (assuming there's only one large red region)
+    for contour in contours:
+        # Find the bounding box of the red region
+        x, y, w, h = cv2.boundingRect(contour)
 
-def detect_red_pixels(image_path):
+        # Extract the region of interest (ROI) from the original image
+        roi = image[y:y+h, x:x+w]
+
+        # Find the background color of the nearest non-red pixels
+        background_color = np.median(image[~red_mask], axis=0)
+
+        # Fill the ROI with the background color
+        roi[:, :] = background_color
+
+    return image
+def replace_red_with_background(image_path):
     # Read the image
     image = cv2.imread(image_path)
 
@@ -46,18 +59,31 @@ def detect_red_pixels(image_path):
     # Create a binary mask for the red pixels
     red_mask = cv2.inRange(hsv_image, lower_red, upper_red)
 
-    # Apply the mask to the original image
-    result_image = cv2.bitwise_and(image, image, mask=red_mask)
+    # Find contours in the red mask
+    contours, _ = cv2.findContours(red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    return result_image
+    # Iterate through each contour (assuming there's only one large red region)
+    for contour in contours:
+        # Find the bounding box of the red region
+        x, y, w, h = cv2.boundingRect(contour)
 
+        # Extract the region of interest (ROI) from the original image
+        roi = image[y:y+h, x:x+w]
+
+        # Find the background color of the nearest non-red pixels
+        background_color = np.median(image[~red_mask], axis=0)
+
+        # Fill the ROI with the background color
+        roi[:, :] = background_color
+
+    return image
 def main():
     file_list = list_files("./data/updated-images")
     img_path = "./data/updated-images/" + file_list[0]
 
     # Load the image
     orig_img = cv2.imread(img_path)
-    orange_result = detect_orange_pixels(img_path)
+    orange_result = replace_red_with_background(img_path)
 
     # Display the original image
     cv2.imshow("Original Image", orig_img)
