@@ -30,7 +30,7 @@ def rename_files(file_list, counts_by_image_type, dimensions_by_image_type):
         # load image and save under new name/format
         with Image.open("./data/raw-images/" + file_name) as img:
             print("Just saved " + output_path + ".PNG")
-            img.save(output_path, format = 'PNG')
+            img.save(output_path + ".PNG", format = 'PNG')
 
 def get_cluster(counter, counts_by_image_type):
     i = 1 # 1

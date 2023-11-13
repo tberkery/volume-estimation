@@ -52,7 +52,24 @@ def detect_red_pixels(image_path):
     return result_image
 
 def main():
-    file_list = list_files("./data/raw-images")
+    file_list = list_files("./data/updated-images")
+    img_path = "./data/updated-images/" + file_list[0]
+
+    # Load the image
+    orig_img = cv2.imread(img_path)
+    orange_result = detect_orange_pixels(img_path)
+
+    # Display the original image
+    cv2.imshow("Original Image", orig_img)
+
+    print(orange_result)
+    # Display the image with detected orange pixels
+    cv2.imshow("Orange Pixels Detection", orange_result)
+
+    # Wait for a key press and close the windows
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
     print(file_list)
 
 if __name__ == "__main__":
