@@ -21,25 +21,57 @@ def rename_files(file_list, counts_by_image_type, dimensions_by_image_type):
         sum += count
         thresholds.append(sum)
     for file_name in file_list:
-        cumulative_sum = 0
-        i = 1
-        while counter > cumulative_sum:
-            cumulative_sum += counts_by_image_type[i]
-            i += 1
-        (height, width) = dimensions_by_image_type[i]
-        new_file_name = "ref_img_" + str(width) + "_" + str(height) + "_" + str(local_counter[i])
-        output_path = "../data/updated-names/" + new_file_name
+        i = get_cluster(counter, counts_by_image_type)
+        ((or_height, or_width), (rd_height, rd_width)) = dimensions_by_image_type[i]
+        new_file_name = "ref_img_" + str(or_height) + "_" + str(rd_height) + "_" + str(rd_width) + "_" + str(local_counter[i])
+        output_path = "./data/updated-images/" + new_file_name
         local_counter[i] += 1
-
+        counter += 1
         # load image and save under new name/format
-        with Image.open(file_name) as img:
-            img.save(output_path = output_path, format = 'PNG')
+        with Image.open("./data/raw-images/" + file_name) as img:
+            print("Just saved " + output_path + ".PNG")
+            img.save(output_path, format = 'PNG')
 
-
-
+def get_cluster(counter, counts_by_image_type):
+    i = 1 # 1
+    sum = counts_by_image_type[i]
+    if counter < sum:
+        return i
+    i += 1 # 2
+    sum += counts_by_image_type[i]
+    if counter < sum:
+        return i
+    i += 1 # 3
+    sum += counts_by_image_type[i]
+    if counter < sum:
+        return i
+    i += 1 # 4
+    sum += counts_by_image_type[i]
+    if counter < sum:
+        return i
+    i += 1 # 5
+    sum += counts_by_image_type[i]
+    if counter < sum:
+        return i
+    i += 1  # 6
+    sum += counts_by_image_type[i]
+    if counter < sum:
+        return i
+    i += 1 # 7
+    sum += counts_by_image_type[i]
+    if counter < sum:
+        return i
+    i += 1  # 8
+    sum += counts_by_image_type[i]
+    if counter < sum:
+        return i
+    i += 1  # 9
+    sum += counts_by_image_type[i]
+    if counter < sum:
+        return i
 
 # Example usage
-directory_path = "../data/raw-names"
+directory_path = "./data/raw-images"
 file_list = list_files(directory_path)
 counts_by_image_type = {
     1: 8,
@@ -52,10 +84,20 @@ counts_by_image_type = {
     8: 30,
     9: 33
 }
+
+# tuples in order of orange object, red object
+# within tuple, it is height and then width (both in cm)
 dimensions_by_image_type = {
-    1: (height, width)
+    1: ((2, 5), (5, 5)),
+    2: ((1, 2), (2.5, 5)),
+    3: ((2, 2), (5, 10)),
+    4: ((2, 5), (2.5, 10)),
+    5: ((2, 2.5), (1, 5)),
+    6: ((2, 2.5), (5, 5)),
+    7: ((0.5, 2.5), (2.5, 5)),
+    8: ((2, 5), (10, 10)),
+    9: ((0.5, 2.5), (1, 5))
 }
 
-print("List of files in sorted order:")
-for file_name in file_list:
-    print(file_name)
+rename_files(file_list, counts_by_image_type, dimensions_by_image_type)
+
