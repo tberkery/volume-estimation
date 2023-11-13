@@ -21,8 +21,8 @@ def replace_orange_with_background(image_path):
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     # Define the lower and upper bounds for the red color in HSV
-    lower_red = np.array([0, 100, 100])
-    upper_red = np.array([30, 255, 255])
+    lower_red = np.array([10, 100, 100])
+    upper_red = np.array([25, 255, 255])
 
     # Create a binary mask for the red pixels
     red_mask = cv2.inRange(hsv_image, lower_red, upper_red)
@@ -35,14 +35,19 @@ def replace_orange_with_background(image_path):
         # Find the bounding box of the red region
         x, y, w, h = cv2.boundingRect(contour)
 
+        # Ensure the bounding box coordinates are within the image bounds
+        x, y, w, h = max(0, x), max(0, y), min(w, image.shape[1] - x), min(h, image.shape[0] - y)
+
         # Extract the region of interest (ROI) from the original image
-        roi = image[y:y+h, x:x+w]
+        roi = image[y:y + h, x:x + w]
 
         # Find the background color of the nearest non-red pixels
-        background_color = np.median(image[~red_mask], axis=0)
+        non_red_pixels = roi[~red_mask[y:y + h, x:x + w].astype(bool)]
+        print(non_red_pixels)
+        background_color = np.median(non_red_pixels, axis=0)
 
         # Fill the ROI with the background color
-        roi[:, :] = background_color
+        roi[:, :] = np.full_like(roi, background_color)
 
     return image
 def replace_red_with_background(image_path):
@@ -67,16 +72,22 @@ def replace_red_with_background(image_path):
         # Find the bounding box of the red region
         x, y, w, h = cv2.boundingRect(contour)
 
+        # Ensure the bounding box coordinates are within the image bounds
+        x, y, w, h = max(0, x), max(0, y), min(w, image.shape[1] - x), min(h, image.shape[0] - y)
+
         # Extract the region of interest (ROI) from the original image
         roi = image[y:y+h, x:x+w]
 
         # Find the background color of the nearest non-red pixels
-        background_color = np.median(image[~red_mask], axis=0)
+        non_red_pixels = roi[~red_mask[y:y+h, x:x+w].astype(bool)]
+        print(non_red_pixels)
+        background_color = np.median(non_red_pixels, axis=0)
 
         # Fill the ROI with the background color
-        roi[:, :] = background_color
+        roi[:, :] = np.full_like(roi, background_color)
 
     return image
+
 def main():
     file_list = list_files("./data/updated-images")
     img_path = "./data/updated-images/" + file_list[0]
@@ -90,7 +101,7 @@ def main():
 
     print(orange_result)
     # Display the image with detected orange pixels
-    cv2.imshow("Orange Pixels Detection", orange_result)
+    cv2.imshow("Orange Pixels Detection", cv2.resize(orange_result, (500, 500)))
 
     # Wait for a key press and close the windows
     cv2.waitKey(0)
